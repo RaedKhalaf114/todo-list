@@ -1,7 +1,7 @@
 <template>
   <div class="row my-3 align-items-start justify-content-between">
     <h3 v-if="!isEdit">{{ todo.title }}</h3>
-    <input v-if="isEdit" type="text" v-bind:value="todo.title" @change="onChangeTitle"/>
+    <input v-if="isEdit" type="text" @keyup.enter="changeViewMode" v-bind:value="todo.title" @change="onChangeTitle"/>
     <div>
       <button @click="changeViewMode" class="btn btn-primary mx-2">
         {{ isEdit ? 'Save' : 'Edit' }}
@@ -44,6 +44,9 @@ export default {
     ...mapActions(['deleteTodo', 'updateTodo']),
     changeViewMode() {
       this.isEdit = !this.isEdit
+      this.reflectUpdates()
+    },
+    reflectUpdates() {
       if (!this.isEdit) {
         const isChanged = this.todo.title !== this.editedTitle;
         if (isChanged) {
