@@ -6,23 +6,39 @@
       <button @click="changeViewMode" class="btn btn-primary mx-2">
         {{ isEdit ? 'Save' : 'Edit' }}
       </button>
-      <button @click="deleteTodo(todo.id)" class="btn btn-danger">Delete</button>
+      <button @click="onDeleteItem" class="btn btn-danger">Delete</button>
     </div>
+    <confirm-modal confirm-action-text="Delete"
+                   :on-confirm="() => deleteTodo(todo.id)"
+                   confirmation-text="Are you sure you want to delete this Todo item ?"
+                   :is-open="this.isConfirmModalOpen"/>
   </div>
 </template>
 
 <script>
 import {mapActions} from "vuex";
+import ConfirmModal from "./ConfirmModal";
 
 export default {
+  components: {
+    ConfirmModal
+  },
   data() {
     return {
       isEdit: false,
-      editedTitle: ''
+      editedTitle: '',
+      isConfirmModalOpen: false,
     }
   },
   props: {
-    todo: {}
+    todo: {
+      type: Object,
+      required: true,
+
+      validator: (todo) => {
+        return !!todo.title
+      }
+    }
   },
   methods: {
     ...mapActions(['deleteTodo', 'updateTodo']),
@@ -38,6 +54,9 @@ export default {
         }
       }
       this.editedTitle = ''
+    },
+    onDeleteItem() {
+      this.isConfirmModalOpen = true
     },
     onChangeTitle(e) {
       this.editedTitle = e.target.value;
